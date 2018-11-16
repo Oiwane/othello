@@ -101,6 +101,7 @@ class Board{
 				return -1;
 			}
 			System.out.println("白の番です");
+			System.out.println();
 
 		}else{  //黒の番
 
@@ -110,10 +111,23 @@ class Board{
 				return -1;
 			}
 			System.out.println("黒の番です");
+			System.out.println();
 
 		}
 
 		return 0;
+
+	}
+
+	/* プレイヤーの番かコンピューターか判定 */
+	public int judge_player(int log, Player player, Computer computer){
+		Player tmp = new Player(computer.color);
+
+		if(computer.is_first){  //コンピューターが先手だった場合
+			return this.judge_player(log, tmp, player);
+		}else{
+			return this.judge_player(log, player, tmp);
+		}
 
 	}
 

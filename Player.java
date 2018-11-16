@@ -1,3 +1,5 @@
+import java.util.Random;
+
 class Player{
     int color;
 
@@ -60,4 +62,38 @@ class Player{
 		return 0;
 	}
 
+}
+
+class Computer extends Player{
+	boolean is_first;
+
+    public Computer(int player_color){
+        if(player_color == Constance.BLACK){
+			this.color = Constance.WHITE;
+			this.is_first = false;
+        }else if(player_color == Constance.WHITE){
+			this.color = Constance.BLACK;
+			this.is_first = true;
+        }
+    }
+
+    public int decide_place(Board currentBoard){
+        int put_place = 0;
+		int[] putable_list = new int[20];
+		int count = 0;
+		Random rand = new Random();
+
+		for(int i = 1; i <= 8; i++){
+			for(int j = 1; j <= 8; j++){
+				if(currentBoard.check_turn_over(this, i, j) != 0){
+					putable_list[count] = i * 10 + j;
+					count++;
+				}
+			}
+		}
+
+		put_place = putable_list[rand.nextInt(count)];
+		
+        return put_place;
+    }
 }

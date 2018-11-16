@@ -2,13 +2,30 @@ import java.io.*;
 
 class Game{
 	public static void main(String[] args) throws IOException{
+		int is_player;
 
-		interpersonal();
+		while(true){
+			System.out.println("0 : 1人で : プレイヤー先手 コンピューター後手");
+			System.out.println("1 : 1人で : プレイヤー後手 コンピューター先手");
+			System.out.println("2 : 2人で");
+			System.out.print("上記の数字を入力してください : ");
+			is_player = Input.input_int();
+		
+			if(is_player == 0 || is_player == 1){
+				vs_computer(is_player+1);
+				break;
+			}else if(is_player == 2){
+				pvp();
+				break;
+			}else{
+				System.out.println("指定された数字を入力してください");
+			}	
+		}
 
 		return;
 	}
 
-	public static void interpersonal() throws IOException{
+	public static void pvp() throws IOException{
 		int log;
 		int put_place;
 		Board current_board = new Board();
@@ -96,9 +113,95 @@ class Game{
 		return;
 	}
 
+	
+	public static void vs_computer(int player_color) throws IOException{
+		int log = 0;
+		int put_place = 0;
+		Board current_board = new Board();
+		Board[] old_board = new Board[60];
+		Player player = new Player(player_color);
+		Computer computer = new Computer(player_color);
+
+		for(int i= 0; i < 60; i++){
+			old_board[i] = new Board();
+		}
+		
+		for(log = 0; log < 60; log++){
+			current_board.print_board();  //盤の表示
+			//どちらかのコマが0になったら
+			if(current_board.black == 0 || current_board.white == 0){
+				break;
+			}
+			show_number_of_piece(current_board);  //コマの数を表示
+
+			//どちらの番なのかを判定
+			//コマを置く場所がない場合、パスする
+			if(current_board.judge_player(log, player, computer) == -1){
+				continue;
+			}
+
+
+			if(log%2 + 1 == player.color){  //プレイヤーの処理
+				if(log > 1){
+					System.out.println("0を入力すると一つ戻ります。");
+				}
+				System.out.print("コマを置く場所の数字を入力してください : ");
+				put_place = Input.input_int();
+				System.out.println();	
+
+				if(put_place == 0){
+
+					if(log < 2){
+						System.out.println("入力された数字が違います");
+						System.out.println();
+						log--;
+						continue;
+					}
+
+					log -= 2;  //1つ前の自分の番に戻る -> logを2つ戻す
+
+					//current_boardにold_boardの情報を移行
+					Board.shift_board(current_board, old_board[log]);
+					log--;
+
+				}else if((11 <= put_place && put_place <= 18) || (21 <= put_place && put_place <= 28) ||
+						(31 <= put_place && put_place <= 38) || (41 <= put_place && put_place <= 48) ||
+						(51 <= put_place && put_place <= 58) || (61 <= put_place && put_place <= 68) ||
+						(71 <= put_place && put_place <= 78) || (81 <= put_place && put_place <= 88)){
+
+					if(player.put_piece(current_board, put_place) == -1){
+						log--;
+						continue;
+					}
+		
+					//old_boardにcurrent_boardの情報を移行
+					Board.shift_board(old_board[log + 1], current_board);
+
+				}else{
+					System.out.println("入力された数字が違います");
+					log--;	
+				}
+			}else{  //コンピュータの処理
+				put_place = computer.decide_place(current_board);
+				computer.put_piece(current_board, put_place);
+				//old_boardにcurrent_boardの情報を移行
+				Board.shift_board(old_board[log + 1], current_board);
+
+			}
+
+		}
+
+		//結果の表示
+		show_result(current_board);
+
+		return;
+		
+	}
+
 	public static void show_number_of_piece(Board board){
 		System.out.println("黒 : " + board.black);
 		System.out.println("白 : " + board.white);
+		System.out.println();
 	}
 	
 	public static void show_result(Board board){
