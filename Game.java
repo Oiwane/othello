@@ -117,19 +117,25 @@ class Game{
 	public static void vs_computer(int player_color) throws IOException{
 		int log = 0;
 		int put_place = 0;
+		int pass_count = 0;
 		Board current_board = new Board();
-		Board[] old_board = new Board[60];
+		//パスも1手として数えているため、64より多めに確保
+		//パスを1手と数えた時の最大手数が分からないため大雑把に100確保
+		Board[] old_board = new Board[100];
 		Player player = new Player(player_color);
 		Computer computer = new Computer(player_color);
 
-		for(int i= 0; i < 60; i++){
+		for(int i= 0; i < 100; i++){
 			old_board[i] = new Board();
 		}
-		
-		for(log = 0; log < 60; log++){
+	
+		//下のコメントはデバッグ用
+		//for(log = current_board.black + current_board.white - 4; log < 100; log++){
+		for(log = 0; log < 100; log++){
 			current_board.print_board();  //盤の表示
-			//どちらかのコマが0になったら
-			if(current_board.black == 0 || current_board.white == 0){
+			//どちらかのコマが0になる、またはパスが続く(どちらも置ける場所がなくなる)、または盤がコマで埋まったら
+			if(current_board.black == 0 || current_board.white == 0 ||
+				pass_count == 2 || current_board.black + current_board.white == 64){
 				break;
 			}
 			show_number_of_piece(current_board);  //コマの数を表示
@@ -137,9 +143,11 @@ class Game{
 			//どちらの番なのかを判定
 			//コマを置く場所がない場合、パスする
 			if(current_board.judge_player(log, player, computer) == -1){
+				pass_count++;
 				continue;
 			}
 
+			pass_count = 0;
 
 			if(log%2 + 1 == player.color){  //プレイヤーの処理
 				if(log > 1){
