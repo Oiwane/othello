@@ -6,9 +6,17 @@ import java.io.IOException;
 
 class Game{
   private TurnState state;
+  private Board currentBoard;
+  private Board[] oldBoard;
 
   Game() {
     state = Black.getInstance();
+    currentBoard = new Board();
+    oldBoard = new Board[Board.LOG_SIZE];
+
+    for(int i = 0; i < Board.LOG_SIZE; i++){
+      oldBoard[i] = new Board();
+    }
   }
 
   private void changeTurn() {
@@ -18,13 +26,6 @@ class Game{
   void pvp() throws IOException{
     int putPlace;
     int passCount = 0;
-    Board currentBoard = new Board();
-    Board[] oldBoard = new Board[Board.LOG_SIZE];
-
-    //oldBoardの初期化
-    for(int i = 0; i < Board.LOG_SIZE; i++){
-      oldBoard[i] = new Board();
-    }
 
     for(int logIndex = 0; logIndex < Board.LOG_SIZE; logIndex++){
       currentBoard.print();
@@ -84,16 +85,9 @@ class Game{
     currentBoard.showResult();
   }
 
-
   void vsComputer(TurnState playersTurn) throws IOException{
-    int putPlace = 0;
+    int putPlace;
     int passCount = 0;
-    Board currentBoard = new Board();
-    //パスも1手として数えているため、64より多めに確保
-    //パスを1手と数えた時の最大手数が分からないため大雑把に100確保
-    Board[] oldBoard = new Board[Board.LOG_SIZE];
-
-    for(int i= 0; i < 100; i++) oldBoard[i] = new Board();
 
     for(int logIndex = 0; logIndex < 100; logIndex++){
       currentBoard.print();
