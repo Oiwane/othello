@@ -10,7 +10,7 @@ class Board{
   private static final int EMPTY = 0;
   private static final int BLACK = 1;
   private static final int WHITE = 2;
-  static final int LOG_SIZE = 100;
+  static final int LOG_SIZE = 60;
 
   private int[][] board = new int[10][10];
   private int numOfBlack;
